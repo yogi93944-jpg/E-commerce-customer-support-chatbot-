@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ShopBot{% endblock %} | ShopBot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">S</span><span>Shop<span class="brand-accent">Bot</span><small>SMART SHOPPING</small></span></a>
+    <div class="side-label">MENU</div>
+    <nav class="side-nav">
+      <a href="{{ url_for('index') }}" class="{% if request.endpoint in ['index','product_detail'] %}active{% endif %}"><span>⌂</span> Discover</a>
+      <a href="{{ url_for('cart') }}" class="{% if request.endpoint == 'cart' %}active{% endif %}"><span>▣</span> My Cart <b class="cart-count">{{ cart_count }}</b></a>
+      {% if current_user %}
+      <a href="{{ url_for('orders') }}" class="{% if request.endpoint == 'orders' %}active{% endif %}"><span>▤</span> My Orders</a>
+      {% endif %}
+      {% if current_user and current_user['is_admin'] %}
+      <a href="{{ url_for('admin') }}" class="{% if request.endpoint == 'admin' %}active{% endif %}"><span>⚙</span> Admin</a>
+      {% endif %}
+    </nav>
+    <div class="side-label category-label">CATEGORIES</div>
+    <nav class="side-nav category-nav">
+      {% for cat in ['Mobiles','Laptops','Audio','Smart Watches','Accessories','Home'] %}
+      <a href="{{ url_for('index', category=cat) }}" class="{% if selected_category|default('') == cat %}active{% endif %}"><span class="category-dot dot-{{ loop.index }}"></span>{{ cat }}</a>
+      {% endfor %}
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="help-card"><div class="help-icon">✦</div><strong>Need a hand?</strong><p>Our ShopBot assistant is ready to help.</p><button type="button" class="help-link" onclick="openChat()">Chat with us ↗</button></div>
+      {% if current_user %}
+      <div class="user-mini"><div class="avatar">{{ current_user['name'][0]|upper }}</div><div class="user-meta"><strong>{{ current_user['name'] }}</strong><small>{{ current_user['email'] }}</small></div><a title="Sign out" href="{{ url_for('logout') }}">↗</a></div>
+      {% else %}
+      <a class="signin-side" href="{{ url_for('login') }}">Sign in / Create account →</a>
+      {% endif %}
+    </div>
+  </aside>
+  <main class="main-area">
+    <header class="topbar">
+      <button class="mobile-menu" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+      <form class="search-form" action="{{ url_for('index') }}" method="get"><span>⌕</span><input name="q" value="{{ query|default('') }}" placeholder="Search products, brands and more..." aria-label="Search products"><button type="submit">Search</button></form>
+      <div class="top-actions"><button class="icon-button" onclick="openChat()" title="Chat support">✧</button><a class="cart-top" href="{{ url_for('cart') }}">▣ <span>Cart</span><b>{{ cart_count }}</b></a>{% if not current_user %}<a class="top-login" href="{{ url_for('login') }}">Sign in</a>{% endif %}</div>
+    </header>
+    <section class="page-content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}<button onclick="this.parentElement.remove()" aria-label="Dismiss">×</button></div>{% endfor %}</div>{% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </section>
+    <footer class="footer">© 2026 ShopBot · A learning project built with Flask, SQLite and NLP</footer>
+  </main>
+</div>
+<div class="chat-widget" id="chatWidget" aria-label="ShopBot chat assistant">
+  <div class="chat-head"><div class="bot-avatar">✦</div><div><strong>ShopBot Assistant</strong><small><span class="online-dot"></span> Online · Here to help</small></div><button onclick="closeChat()" aria-label="Close chat">×</button></div>
+  <div class="chat-messages" id="chatMessages"><div class="chat-bubble bot-bubble">Hey there! 👋 I’m your ShopBot assistant. Ask me about delivery, returns, payments or products.</div></div>
+  <div class="quick-prompts"><button onclick="sendQuick('How long does delivery take?')">Delivery</button><button onclick="sendQuick('What is your return policy?')">Returns</button><button onclick="sendQuick('What payment methods are available?')">Payments</button></div>
+  <form class="chat-input" onsubmit="sendChat(event)"><input id="chatInput" placeholder="Type your question..." autocomplete="off" aria-label="Chat message"><button type="submit" aria-label="Send message">➤</button></form>
+</div>
+<button class="chat-fab" id="chatFab" onclick="openChat()" aria-label="Open ShopBot assistant"><span>✦</span><i>Chat with us</i></button>
+</body>
+</html>

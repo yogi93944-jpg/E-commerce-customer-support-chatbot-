@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}My Orders{% endblock %}
+{% block content %}
+<div class="page-title-row"><div><span class="eyebrow muted-eyebrow">YOUR SHOPPING HISTORY</span><h1>My orders<span>.</span></h1><p>All your ShopBot orders, in one place.</p></div><a href="{{ url_for('index') }}" class="btn btn-outline">Shop more ↗</a></div>
+{% if orders %}<div class="orders-list">{% for order in orders %}<article class="order-card"><div class="order-card-head"><div><small>ORDER #{{ order['id'] }}</small><h3>₹{{ "{:,.2f}".format(order['total']) }}</h3><span class="order-date">Placed {{ order['created_at'] }}</span></div><span class="status-pill status-{{ order['status']|lower }}">{{ order['status'] }}</span></div><div class="order-products">{% for item in order['items'] %}<div><span class="order-product-icon">▣</span><span>{{ item['name'] }} <small>× {{ item['quantity'] }}</small></span><strong>₹{{ "{:,.0f}".format(item['price'] * item['quantity']) }}</strong></div>{% endfor %}</div><div class="order-delivery"><span>Delivery to {{ order['customer_name'] }}</span><span>{{ order['payment'] }}</span></div></article>{% endfor %}</div>{% else %}<div class="empty-state"><div>▤</div><h3>No orders yet</h3><p>Your future great finds will appear here.</p><a class="btn btn-primary" href="{{ url_for('index') }}">Start shopping</a></div>{% endif %}
+{% endblock %}

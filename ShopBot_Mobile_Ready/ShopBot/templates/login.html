@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Create account' if mode == 'register' else 'Sign in' }}{% endblock %}
+{% block content %}
+<section class="auth-wrap"><div class="auth-art"><span class="eyebrow">WELCOME TO SHOPBOT</span><h1>Shopping that<br><em>gets you.</em></h1><p>Discover useful finds, track your orders, and get a little help whenever you need it.</p><div class="auth-orb">✦</div><div class="auth-mini-card">✧ <span>Smart help, happy shopping</span></div></div><div class="auth-form-panel"><div class="auth-heading"><span class="eyebrow muted-eyebrow">{{ 'GET STARTED' if mode == 'register' else 'WELCOME BACK' }}</span><h2>{{ 'Create your account' if mode == 'register' else 'Sign in to ShopBot' }}</h2><p>{{ 'A few details and you’re ready to go.' if mode == 'register' else 'Your next great find is just around the corner.' }}</p></div>
+<form method="post" class="stack-form">
+{% if mode == 'register' %}<label>Full name<input name="name" required autocomplete="name" placeholder="Your name"></label>{% endif %}
+<label>Email address<input type="email" name="email" required autocomplete="email" placeholder="you@example.com"></label>
+<label>Password<input type="password" name="password" required minlength="6" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" placeholder="{{ 'At least 6 characters' if mode == 'register' else 'Enter your password' }}"></label>
+<button class="btn btn-primary full-button" type="submit">{{ 'Create account' if mode == 'register' else 'Sign in' }} <span>→</span></button>
+</form><div class="auth-switch">{% if mode == 'register' %}Already have an account? <a href="{{ url_for('login') }}">Sign in</a>{% else %}New to ShopBot? <a href="{{ url_for('register') }}">Create an account</a>{% endif %}</div></div></section>
+{% endblock %}
